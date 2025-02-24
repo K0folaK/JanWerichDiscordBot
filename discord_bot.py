@@ -50,15 +50,10 @@ async def on_message(message):
             # Synthesize speech using ElevenLabs
             audio_data = synthesize_speech(generated_text)
 
-            # Send the generated text back to the Discord channel
-            # await message.channel.send(f"{generated_text}")
-
-            # Optionally, you can send the audio file back to the Discord channel
+            # Send the audio file back to the Discord channel without saving it
             timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
             audio_filename = f"JanWerich_{timestamp}.wav"
-            with open(audio_filename, "wb") as f:
-                f.write(audio_data.getbuffer())
-            await message.channel.send(file=discord.File(audio_filename))
+            await message.reply(file=discord.File(audio_data, filename=audio_filename))
             break
 
 client.run(os.getenv("DISCORD_TOKEN"))
