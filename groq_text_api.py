@@ -14,12 +14,15 @@ def generate_text(prompt):
     full_prompt = f"{system_prompt}\n\nOdpověz na tento dotaz jako Jan Werich: {prompt}"
     model = "llama-3.3-70b-versatile"
 
-    response = openai.Completion.create(
+    response = openai.ChatCompletion.create(
         model=model,
-        prompt=full_prompt,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": prompt}
+        ],
         max_tokens=1000
     )
-    return response.choices[0].text.strip()
+    return response.choices[0].message['content'].strip()
 
 # Example usage
 if __name__ == "__main__":
