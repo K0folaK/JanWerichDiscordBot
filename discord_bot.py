@@ -38,22 +38,27 @@ async def on_message(message):
         return
 
     prefixes = ["Janku,", "Jane,", "Pane Werich,"]
-    for prefix in prefixes:
-        if message.content.startswith(prefix):
-            prompt = message.content[len(prefix):].strip()
-            logging.info(f"Received prompt: {prompt}")
+    if any(message.content.startswith(prefix) for prefix in prefixes) or client.user.mentioned_in(message):
+        if client.user.mentioned_in(message):
+            prompt = message.content.replace(f"<@{client.user.id}>", "").strip()
+        else:
+            for prefix in prefixes:
+                if message.content.startswith(prefix):
+                    prompt = message.content[len(prefix):].strip()
+                    break
 
-            # Generate text using Groq API
-            generated_text = generate_text(prompt)
-            logging.info(f"Generated text: {generated_text}")
+        logging.info(f"Received prompt: {prompt}")
 
-            # Synthesize speech using ElevenLabs
-            audio_data = synthesize_speech(generated_text)
+        # Generate text using Groq API
+        generated_text = generate_text(prompt)
+        logging.info(f"Generated text: {generated_text}")
 
-            # Send the audio file back to the Discord channel without saving it
-            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-            audio_filename = f"JanWerich_{timestamp}.wav"
-            await message.reply(file=discord.File(audio_data, filename=audio_filename))
-            break
+        # Synthesize speech using ElevenLabs
+        audio_data = synthesize_speech(generated_text)
+
+        # Send the audio file back to the Discord channel without saving it
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        audio_filename = f"JanWerich_{timestamp}.wav"
+        await message.reply(file=discord.File(audio_data, filename=audio_filename), mention_author=True)
 
 client.run(os.getenv("DISCORD_TOKEN"))

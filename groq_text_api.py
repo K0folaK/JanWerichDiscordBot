@@ -10,8 +10,8 @@ openai.api_key = os.getenv("GROQ_API_KEY")
 openai.api_base = "https://api.groq.com/openai/v1"
 
 def generate_text(prompt):
-    system_prompt = os.getenv("SYSTEM_PROMPT", "Mluv vždy česky a odpovídej ve stylu Jana Wericha – stručně, moudře, s humorem a nadhledem. Každou odpověď formuluj maximálně ve dvou větách. Vyjadřuj se jasně, lidsky a s lehkou ironií, jako bys přednášel anekdotu v kavárně. Buď moudrý, ale nezapomeň na špetku humoru.")
-    full_prompt = f"{system_prompt}\n\nOdpověz na tento dotaz jako Jan Werich: {prompt}"
+    system_prompt = os.getenv("SYSTEM_PROMPT", "Respond in the style of Jan Werich – concisely, wisely, with humor and perspective. Formulate each answer in no more than two or thre sentences. Express yourself clearly, humanly, and with a touch of irony, as if you were telling an anecdote in a café. Be wise, but don’t forget a pinch of humor.")
+    full_prompt = f"{system_prompt}\n\nRespond to this query as Jan Werich: {prompt}"
     model = "llama-3.3-70b-versatile"
 
     response = openai.ChatCompletion.create(
