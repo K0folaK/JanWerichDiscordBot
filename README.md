@@ -1,67 +1,44 @@
-# JanWerichDiscordBot
+# Jan Werich Discord Bot
 
-This repository contains a Discord bot that integrates with ElevenLabs and Groq APIs.
-
-## Features
-
-- Generates responses using Groq API
-- Synthesizes speech using ElevenLabs API
+This project is a Discord bot designed to respond in the style of Jan Werich. It uses:
+- Discord for bot integration
+- ElevenLabs for text-to-speech synthesis
+- Groq API + OpenAI for text generation
 
 ## Setup
 
-1. Clone the repository:
-    ```sh
-    git clone https://github.com/yourusername/JanWerichDiscordBot.git
-    cd JanWerichDiscordBot
-    ```
+1. Clone the repository and install required dependencies:
+   ```bash
+   git clone <repository-link>
+   cd JanWerichDiscordBot
+   pip install -r requirements.txt
+   ```
 
-2. Create a virtual environment and activate it:
-    ```sh
-    python -m venv venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-    ```
+2. Configure environment variables in the .env file (example):
+   ```ini
+   DISCORD_TOKEN=your_discord_bot_token
+   ELEVENLABS_API_KEY=your_elevenlabs_api_key
+   GROQ_API_KEY=your_groq_api_key
+   VOICE_ID=your_voice_id
+   LOG_LEVEL=DEBUG
+   ```
 
-3. Install the required packages:
-    ```sh
-    pip install -r requirements.txt
-    ```
-
-4. Create a `.env` file in the root directory and add the following variables:
-    ```properties
-    # Discord bot token
-    DISCORD_TOKEN=YOUR_DISCORD_BOT_TOKEN
-
-    # ElevenLabs API key
-    ELEVENLABS_API_KEY=YOUR_ELEVENLABS_API_KEY
-
-    # Groq API key
-    GROQ_API_KEY=YOUR_GROQ_API_KEY
-
-    # ElevenLabs Voice ID
-    VOICE_ID=YOUR_VOICE_ID  # Jan Werich voice
-
-    # Logging level
-    LOG_LEVEL=DEBUG
-    ```
-
-    Replace the placeholder values with your actual keys and IDs.
-
-5. Run the bot:
-    ```sh
-    python main.py
-    ```
+3. Run the main bot script:
+   ```bash
+   python main.py
+   ```
 
 ## Files
 
-- [discord_bot.py](http://_vscodecontentref_/2): Contains the main logic for the Discord bot.
-- [elevenlabs.py](http://_vscodecontentref_/3): Contains the function to synthesize speech using ElevenLabs API.
-- [main.py](http://_vscodecontentref_/4): Entry point of the application.
-- [openai_api.py](http://_vscodecontentref_/5): Contains the function to get responses from OpenAI API.
+- **conf_check.py**  
+  Checks and updates mandatory environment variables to ensure system requirements are satisfied.
 
-## API Usage
+- **janwerich_voice.py**  
+  Handles speech synthesis with ElevenLabs.
 
-This bot uses the Groq API instead of the OpenAI API for its functionalities. Make sure to provide the correct Groq API key in the `.env` file.
+- **.env**  
+  Contains all essential environment variables.
 
-## License
+## Contributing
 
-This project is licensed under the MIT License.
+Contributions are welcome! Please open a pull request or issue for any improvements or questions.

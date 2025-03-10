@@ -1,9 +1,27 @@
 import os
+import logging
 from dotenv import load_dotenv
 import requests
 import openai
 
+# Set up logging
+if not os.path.exists('logs'):
+    os.makedirs('logs')
+
+# Get the logging level from the .env file, default to INFO if not set
+log_level = os.getenv('LOG_LEVEL', 'INFO').upper()
+logging.basicConfig(
+    filename='logs/conf_check.log',
+    level=getattr(logging, log_level, logging.INFO),
+    format='%(asctime)s:%(levelname)s:%(name)s:%(message)s'
+)
+
 def check_env_variables():
+    logging.info("Starting check_env_variables function")
+    """
+    Checks if mandatory environment variables are set or not equal to placeholders.
+    Raises a ValueError if any variables are missing or invalid.
+    """
     load_dotenv()  # Load environment variables from .env file
 
     mandatory_vars = {
@@ -20,25 +38,25 @@ def check_env_variables():
             missing_vars.append(var)
 
     if missing_vars:
-        print(f"Missing or invalid values for mandatory environment variables: {', '.join(missing_vars)}")
+        logging.error(f"Missing or invalid values for mandatory environment variables: {', '.join(missing_vars)}")
         update_env_file(missing_vars)
         raise ValueError("Please restart the application after updating the environment variables.")
 
-    # Test the validity of the environment variables
+    # Test the validity of environment variables
     try:
         test_discord_token(os.getenv('DISCORD_TOKEN'))
     except ValueError as e:
         update_env_file(['DISCORD_TOKEN'])
-        load_dotenv()  # Reload environment variables
-        print(f"Error: {e}")
+        load_dotenv()  # Load environment variables
+        logging.error(f"Error: {e}")
         return
 
     try:
         test_groq_api_key(os.getenv('GROQ_API_KEY'))
     except ValueError as e:
         update_env_file(['GROQ_API_KEY'])
-        load_dotenv()  # Reload environment variables
-        print(f"Error: {e}")
+        load_dotenv()  # Load environment variables
+        logging.error(f"Error: {e}")
         return
 
     try:
@@ -48,8 +66,8 @@ def check_env_variables():
             update_env_file(['VOICE_ID'])
         else:
             update_env_file(['ELEVENLABS_API_KEY'])
-        load_dotenv()  # Reload environment variables
-        print(f"Error: {e}")
+        load_dotenv()  # Load environment variables
+        logging.error(f"Error: {e}")
         return
 
 def update_env_file(missing_vars):
@@ -66,28 +84,34 @@ def update_env_file(missing_vars):
 
     # Prompt user for missing variables
     for var in missing_vars:
-        env_vars[var] = input(f"Please enter the value for {var}: ")
+        env_vars[var] = input(f"Please enter a value for {var}: ")
 
     # Write updated values back to .env file
     with open(env_file_path, 'w') as file:
         for key, value in env_vars.items():
             file.write(f"{key}={value}\n")
 
-    load_dotenv()  # Reload environment variables after updating the file
+    load_dotenv()  # Load environment variables after updating the file
 
 def test_discord_token(token):
+    """
+    Tests the validity of the provided Discord token.
+    """
     url = "https://discord.com/api/v10/users/@me"
     headers = {"Authorization": f"Bot {token}"}
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
-        print("Testing Discord token:OK")
+        logging.info("Testing Discord token: OK")
     else:
         raise ValueError("Invalid Discord token")
 
 def test_groq_api_key(api_key):
+    """
+    Tests the Groq API key by attempting a sample completion.
+    """
     openai.api_key = api_key
     openai.api_base = "https://api.groq.com/openai/v1"
-    system_prompt = os.getenv("SYSTEM_PROMPT", "Mluv ve stylu Jana Wericha – stručně, moudře, s humorem a nadhledem. Každou odpověď formuluj maximálně ve dvou větách.")
+    system_prompt = os.getenv("SYSTEM_PROMPT", "Speak in the style of Jan Werich – briefly, wisely, with humor and perspective. Formulate each answer in no more than two sentences.")
     try:
         openai.ChatCompletion.create(
             model="llama-3.3-70b-versatile",
@@ -97,21 +121,24 @@ def test_groq_api_key(api_key):
             ],
             max_tokens=1
         )
-        print("Testing Groq API key:OK")
+        logging.info("Testing Groq API key: OK")
     except Exception:
         raise ValueError("Invalid Groq API key")
 
 def test_elevenlabs_api_key(api_key, voice_id):
+    """
+    Tests the ElevenLabs API key and Voice ID by requesting voice data.
+    """
     url = "https://api.elevenlabs.io/v1/voices"
     headers = {"xi-api-key": api_key}
     response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
-        print("Testing ElevenLabs API key:OK")
+        logging.info("Testing ElevenLabs API key: OK")
         voices_data = response.json()
         voice_ids = [voice.get("voice_id", "") for voice in voices_data.get("voices", [])]
         if voice_id in voice_ids:
-            print("Testing ElevenLabs Voice ID:OK")
+            logging.info("Testing ElevenLabs Voice ID: OK")
         else:
             raise ValueError("Invalid ElevenLabs Voice ID")
     else:
@@ -120,6 +147,6 @@ def test_elevenlabs_api_key(api_key, voice_id):
 if __name__ == "__main__":
     try:
         check_env_variables()
-        print("All mandatory environment variables are set correctly.")
+        logging.info("All mandatory environment variables are set correctly.")
     except ValueError as e:
-        print(f"Error: {e}")
+        logging.error(f"Error: {e}")

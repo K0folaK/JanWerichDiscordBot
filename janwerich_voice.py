@@ -8,6 +8,10 @@ from openai_api import generate_text
 load_dotenv()
 
 def synthesize_speech(text):
+    """
+    Synthesizes speech from the provided text using ElevenLabs.
+    Returns a BytesIO object containing the audio data.
+    """
     api_key = os.getenv("ELEVENLABS_API_KEY")
     voice_id = os.getenv("VOICE_ID")
 
