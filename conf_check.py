@@ -11,7 +11,7 @@ if not os.path.exists('logs'):
 # Get the logging level from the .env file, default to INFO if not set
 log_level = os.getenv('LOG_LEVEL', 'INFO').upper()
 logging.basicConfig(
-    filename='logs/conf_check.log',
+    filename='logs/discord_bot.log',
     level=getattr(logging, log_level, logging.INFO),
     format='%(asctime)s:%(levelname)s:%(name)s:%(message)s'
 )
@@ -143,10 +143,3 @@ def test_elevenlabs_api_key(api_key, voice_id):
             raise ValueError("Invalid ElevenLabs Voice ID")
     else:
         raise ValueError("Invalid ElevenLabs API key")
-
-if __name__ == "__main__":
-    try:
-        check_env_variables()
-        logging.info("All mandatory environment variables are set correctly.")
-    except ValueError as e:
-        logging.error(f"Error: {e}")
